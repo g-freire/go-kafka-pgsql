@@ -1,0 +1,74 @@
+version: '2.2'
+services:
+
+    postgres:
+        image: postgres:13.2
+        container_name: postgres
+        environment:
+        # - POSTGRES_USER=admin
+        # - POSTGRES_PASSWORD=admin
+        # - PGDATA=/var/lib/postgresql/data/pgdata
+            POSTGRES_PASSWORD: 'admin'
+            POSTGRES_USER: 'admin'
+            POSTGRES_DB: 'admin'
+        # volumes:
+        # - ./data:/var/lib/postgresql/data
+        ports:
+        - 6543:5432
+        networks:
+        - local-net
+
+    postgres-exporter:
+        image: quay.io/prometheuscommunity/postgres-exporter
+        container_name: postgres-exporter
+        environment:
+        - DATA_SOURCE_NAME=postgresql://admin:admin@postgres:5432/postgres?sslmode=disable
+        # - DATA_SOURCE_NAME=postgresql://lotus:lotus@192.168.1.189:5432/chain_monitor?sslmode=disable
+        ports:
+        - 9187:9187
+        networks:
+        - local-net
+
+    prometheus:
+        image: prom/prometheus:v2.12.0
+        container_name: prometheus
+        volumes:
+        - ./data:/prometheus-data
+        - ./prometheus.yml:/etc/prometheus/prometheus.yml
+        ports:
+        - 9090:9090
+        networks:
+        - local-net
+
+    grafana:
+        image: grafana/grafana
+        environment:
+            - GF_SERVER_ROOT_URL=http://127.0.0.1:3000
+            - GF_SECURITY_ADMIN_PASSWORD=admin
+        ports:
+            - 3000:3000
+        networks:
+            - local-net
+        external_links:
+            - local-net
+
+    portainer:
+        image: portainer/portainer
+        command: -H unix:///var/run/docker.sock
+        restart: always
+        ports:
+            - 9000:9000
+            - 8000:8000
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - portainer_data:/data
+        networks:
+            - local-net
+
+
+networks:
+    local-net:
+        external: true
+
+volumes:
+    portainer_data:
