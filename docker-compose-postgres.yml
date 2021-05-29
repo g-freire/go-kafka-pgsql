@@ -5,14 +5,11 @@ services:
         image: postgres:13.2
         container_name: postgres
         environment:
-        # - POSTGRES_USER=admin
-        # - POSTGRES_PASSWORD=admin
-        # - PGDATA=/var/lib/postgresql/data/pgdata
-            POSTGRES_PASSWORD: 'admin'
-            POSTGRES_USER: 'admin'
-            POSTGRES_DB: 'admin'
-        # volumes:
-        # - ./data:/var/lib/postgresql/data
+        - POSTGRES_USER=admin
+        - POSTGRES_PASSWORD=admin
+        - PGDATA=/var/lib/postgresql/data/pgdata
+        volumes:
+        - ./data:/var/lib/postgresql/data
         ports:
         - 6543:5432
         networks:
@@ -64,6 +61,11 @@ services:
             - portainer_data:/data
         networks:
             - local-net
+
+        
+
+
+
 
 
 networks:
