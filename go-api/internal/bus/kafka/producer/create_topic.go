@@ -10,7 +10,7 @@ import (
 func CreateTopic(topicName string, partitions int32, replication int16) {
 
 	// Set broker configuration
-	broker := sarama.NewBroker("")
+	broker := sarama.NewBroker("localhost:9092")
 
 	// Additional configurations. Check sarama doc for more info
 	config := sarama.NewConfig()

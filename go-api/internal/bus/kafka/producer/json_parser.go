@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"path/filepath"
 	"strconv"
 )
 
@@ -14,15 +13,16 @@ func ReadJsonFiles() [][]byte {
 	var filePath string
 
 	// WIN
-	//fileAbsolutePrefix = ""
+	//absPath, _ := filepath.Abs("/go-api")
+	//fileAbsolutePrefix = absPath
 
 	// MAC
 	//absPath, _ := filepath.Abs("")
 	//fileAbsolutePrefix = absPath
 
 	// DOCKER ALPINE
-	absPath, _ := filepath.Abs("./producer/test_files/")
-	fileAbsolutePrefix = absPath
+	//absPath, _ := filepath.Abs("./producer/test_files/")
+	//fileAbsolutePrefix = absPath
 
 	files, err := ioutil.ReadDir(fileAbsolutePrefix)
 	if err != nil {

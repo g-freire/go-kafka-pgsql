@@ -1,4 +1,4 @@
-package main
+package event
 
 import (
 	"context"
@@ -64,33 +64,37 @@ func insertLoad(client *Client, clientN string) {
 		} else {
 			fmt.Print("\n INSERTED ", clientN, " ", msg)
 		}
-
 		// time.Sleep(time.Second)
 	}
-
 }
 
-func main() {
+func StartLoadTest() {
+	postgresURI := os.Getenv("DATABASE_URI")
+	if postgresURI == "" {
+		postgresURI = defaultPostgresURI
+	}
+	// load test the db session limit
+	client := NewPostgresClient(postgresURI)
+	var i = 0
+	for {
+		defer client.Close()
+		s := strconv.Itoa(i)
+		go insertLoad(client, s)
+		i++
+	}
+}
+
+func StartLoadTestSessions() {
 	postgresURI := os.Getenv("DATABASE_URI")
 	if postgresURI == "" {
 		postgresURI = defaultPostgresURI
 	}
 
-	// load test the db session limit
-	for i := 0; i < 20000; i++ {
+	//load test the db session limit
+	for i := 0; i < 5000; i++ {
 		client := NewPostgresClient(postgresURI)
 		defer client.Close()
 		s := strconv.Itoa(i)
 		go insertLoad(client, s)
-
 	}
-
-	client2 := NewPostgresClient(postgresURI)
-	go insertLoad(client2, "2")
-	defer client2.Close()
-
-	client := NewPostgresClient(postgresURI)
-	defer client.Close()
-	insertLoad(client, "1")
-
 }

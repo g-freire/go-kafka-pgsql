@@ -1,4 +1,4 @@
-module pg
+module event-driven
 
 go 1.16
 

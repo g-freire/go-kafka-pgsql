@@ -124,36 +124,36 @@ services:
         networks:
             - local-net
         
-    # kowl:
-    #     image: quay.io/cloudhut/kowl:v1.2.2
-    #     container_name: kowl
-    #     restart: on-failure
-    #     hostname: kowl
-    #     volumes:
-    #     - ./config.yaml:/etc/kowl/config.yaml
-    #     ports:
-    #     - "8080:8080"
-    #     entrypoint: ./kowl --config.filepath=/etc/kowl/config.yaml
-    #     depends_on:
-    #         - kafka1
-    
-    cadvisor:
-        image: gcr.io/cadvisor/cadvisor:latest
-        container_name: cadvisor
-        ports:
-        - 2000:8080
+    kowl:
+        image: quay.io/cloudhut/kowl:v1.2.2
+        container_name: kowl
+        restart: on-failure
+        hostname: kowl
         volumes:
-        - /:/rootfs:ro
-        - /var/run:/var/run:rw
-        - /sys:/sys:ro
-        - /var/lib/docker/:/var/lib/docker:ro
-        depends_on:
-        - redis
-    redis:
-        image: redis:latest
-        container_name: redis
+        - ./config.yaml:/etc/kowl/config.yaml
         ports:
-        - 6379:6379
+        - "8080:8080"
+        entrypoint: ./kowl --config.filepath=/etc/kowl/config.yaml
+        depends_on:
+            - kafka1
+    
+    # cadvisor:
+    #     image: gcr.io/cadvisor/cadvisor:latest
+    #     container_name: cadvisor
+    #     ports:
+    #     - 2000:8080
+    #     volumes:
+    #     - /:/rootfs:ro
+    #     - /var/run:/var/run:rw
+    #     - /sys:/sys:ro
+    #     - /var/lib/docker/:/var/lib/docker:ro
+    #     depends_on:
+    #     - redis
+    # redis:
+    #     image: redis:latest
+    #     container_name: redis
+    #     ports:
+    #     - 6379:6379
 
 
 

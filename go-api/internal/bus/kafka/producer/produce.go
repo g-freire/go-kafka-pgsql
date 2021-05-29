@@ -1,11 +1,8 @@
 package producer
 
 import (
-	"fmt"
 	"github.com/Shopify/sarama"
 	"log"
-	"strconv"
-	"time"
 )
 
 func produce(topic string, key string, value []byte, producer sarama.SyncProducer) {
@@ -25,10 +22,10 @@ func produce(topic string, key string, value []byte, producer sarama.SyncProduce
 
 func PublishToKafka(brokers []string, topic string) {
 
-	var delayBetweenMsg int = 5
-	var delayBetweenTests int = 20
+	//var delayBetweenMsg int = 5
+	//var deklayBetweenTests int = 20
 
-	byteValuesFromJSONTest := ReadJsonFiles()
+	//byteValuesFromJSONTest := ReadJsonFiles()
 	config := CreatePublisherConfig()
 
 	producer, err := sarama.NewSyncProducer(brokers, config)
@@ -41,20 +38,22 @@ func PublishToKafka(brokers []string, topic string) {
 		}
 	}()
 
-	go SendKeepAliveSignal(10, topic, producer)
+	//go SendKeepAliveSignal(10, topic, producer)
+	SendKeepAliveSignal(1, topic, producer)
 
-	for {
-		for i, v := range byteValuesFromJSONTest {
-			fmt.Printf("\n----------------------------------------------")
-			fmt.Printf("\n INDEX %d JSON FILE:\n %s \n", i, string(v))
-			fmt.Printf("----------------------------------------------")
 
-			fmt.Printf("\n SLEEPING FOR %d SECONDS\n", delayBetweenMsg)
-			time.Sleep(time.Duration(delayBetweenMsg) * time.Second)
-			produce(topic, strconv.Itoa(i), v, producer)
-		}
-		fmt.Printf("\n SLEEPING FOR %d SECONDS BEFORE NEXT TEST\n", delayBetweenTests)
-		time.Sleep(time.Duration(delayBetweenTests) * time.Second)
-	}
+	//for {
+	//	for i, v := range byteValuesFromJSONTest {
+	//		fmt.Printf("\n----------------------------------------------")
+	//		fmt.Printf("\n INDEX %d JSON FILE:\n %s \n", i, string(v))
+	//		fmt.Printf("----------------------------------------------")
+	//
+	//		fmt.Printf("\n SLEEPING FOR %d SECONDS\n", delayBetweenMsg)
+	//		time.Sleep(time.Duration(delayBetweenMsg) * time.Second)
+	//		produce(topic, strconv.Itoa(i), v, producer)
+	//	}
+	//	fmt.Printf("\n SLEEPING FOR %d SECONDS BEFORE NEXT TEST\n", delayBetweenTests)
+	//	time.Sleep(time.Duration(delayBetweenTests) * time.Second)
+	//}
 
 }
