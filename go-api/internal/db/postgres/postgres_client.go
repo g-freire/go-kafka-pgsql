@@ -12,14 +12,11 @@ var (
 	postgresOnce   sync.Once
 )
 
-// Client is a client for the PostgreSQL db engine.
 type Client struct {
-	*sql.DB
+	Conn *sql.DB
 }
 
-// NewPostgresClient returns a new client for postgres.
-func NewPostgresClient(source string) *Client {
-	//log := logger.New("postgres", true)
+func NewPostgresSingletonClient(source string) *sql.DB {
 	postgresOnce.Do(func() {
 		db, err := sql.Open("postgres", source)
 		if err != nil {
@@ -34,10 +31,25 @@ func NewPostgresClient(source string) *Client {
 		log.Printf("SINGLETON CONCURRENT DB CONNECTION CREATED")
 		postgresClient = &Client{db}
 	})
-	return postgresClient
+	return postgresClient.Conn
 }
 
-// ViewStats returns the status of the db.
+func NewPostgresClient(source string) *sql.DB {
+	db, err := sql.Open("postgres", source)
+	if err != nil {
+		log.Printf("DB CONNECTION ERROR !! \n", err)
+		panic(err)
+	}
+	err = db.PingContext(context.Background())
+	if err != nil {
+		log.Printf("Error pinging database: " + err.Error())
+		panic(err)
+	}
+	log.Printf("DB CONNECTION CREATED")
+	postgresClient = &Client{db}
+	return postgresClient.Conn
+}
+
 func (c *Client) ViewStats() sql.DBStats {
-	return c.Stats()
+	return c.Conn.Stats()
 }

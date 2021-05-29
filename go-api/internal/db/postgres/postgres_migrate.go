@@ -2,11 +2,12 @@ package postgres
 
 import (
 	"errors"
+	"log"
 
 	"github.com/golang-migrate/migrate/v4"
 )
 
-func DoMigrate(migrationsRootFolder, databaseURL string, log logger.Logger) error {
+func DoMigrate(migrationsRootFolder, databaseURL string) error {
 	m, err := migrate.New(
 		migrationsRootFolder,
 		databaseURL,
@@ -16,9 +17,9 @@ func DoMigrate(migrationsRootFolder, databaseURL string, log logger.Logger) erro
 	}
 
 	if err := m.Up(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
-		log.Errorf("MIGRATION ERROR: \n", err)
+		log.Printf("MIGRATION ERROR: \n", err)
 		return err
 	}
-	log.Debug("MIGRATION WORKS")
+	log.Printf("MIGRATION WORKS")
 	return nil
 }
