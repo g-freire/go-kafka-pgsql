@@ -2,7 +2,7 @@ package main
 
 import (
 	k "event-driven/internal/bus/kafka"
-	e "event-driven/pkg/event"
+	"event-driven/internal/bus/kafka/producer"
 )
 
 var dev = k.Env{
@@ -12,10 +12,15 @@ var dev = k.Env{
 
 func main() {
 	// LOCAL KAFKA
-	//producer.CreateTopic(dev.topic, 1, 2)
+	//producer.CreateTopic(dev.Brokers, dev.topic, 1, 2)
 	//producer.PublishToKafka(dev.Brokers, dev.Topic)
+	//producer.SendKeepAliveSignal(dev.Brokers, dev.Topic)
+	producer.SendKeepAliveSignalLoop(dev.Brokers, dev.Topic, 0)
+
 
 	// LOCAL POSTGRES DB
-	e.StartLoadTest()
+	//e.StartLoadTest()
+	//e.StartLoadTestSessions()
 
 }
+

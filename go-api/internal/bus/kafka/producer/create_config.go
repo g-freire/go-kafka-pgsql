@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func CreatePublisherConfig() *sarama.Config {
+func CreatePublisherConfigStruct() *sarama.Config {
 
 	// RETURNS THE SANE DEFAULT CONFIG STRUCT
 	config := sarama.NewConfig()

@@ -8,23 +8,16 @@ import (
 )
 
 func CreateTopic(topicName string, partitions int32, replication int16) {
-
-	// Set broker configuration
 	broker := sarama.NewBroker("localhost:9092")
-
-	// Additional configurations. Check sarama doc for more info
-	config := sarama.NewConfig()
-	config.Version = sarama.V1_0_0_0
-
-	// Open broker connection with configs defined above
+	config := CreatePublisherConfigStruct()
 	broker.Open(config)
 
-	// check if the connection was OK
 	connected, err := broker.Connected()
 	if err != nil {
 		log.Print(err.Error())
 	}
 	log.Print("Connected :", connected)
+
 	// Setup the Topic details in CreateTopicRequest struct
 	topic := topicName
 	topicDetail := &sarama.TopicDetail{}

@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	"log"
 	"sync"
 )
 
@@ -18,19 +19,19 @@ type Client struct {
 
 // NewPostgresClient returns a new client for postgres.
 func NewPostgresClient(source string) *Client {
-	log := logger.New("postgres", true)
+	//log := logger.New("postgres", true)
 	postgresOnce.Do(func() {
 		db, err := sql.Open("postgres", source)
 		if err != nil {
-			log.Errorf("SINGLETON CONCURRENT DB CONNECTION ERROR !! \n", err)
+			log.Printf("SINGLETON CONCURRENT DB CONNECTION ERROR !! \n", err)
 			panic(err)
 		}
 		err = db.PingContext(context.Background())
 		if err != nil {
-			log.Errorf("Error pinging database: " + err.Error())
+			log.Printf("Error pinging database: " + err.Error())
 			panic(err)
 		}
-		log.Info("SINGLETON CONCURRENT DB CONNECTION CREATED")
+		log.Printf("SINGLETON CONCURRENT DB CONNECTION CREATED")
 		postgresClient = &Client{db}
 	})
 	return postgresClient
