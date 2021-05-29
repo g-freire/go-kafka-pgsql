@@ -1,5 +1,6 @@
-# postgres
-data
+# docker volumes
+volumes
+
 ## GO
 # Binaries for programs and plugins
 *.exe
