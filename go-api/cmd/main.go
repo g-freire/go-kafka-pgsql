@@ -31,9 +31,8 @@ func main() {
 
 	// LOCAL POSTGRES DB
 	//e.StartLoadTest(defaultPostgresURI)
-	//e.StartLoadTestSessions(defaultPostgresURI)
-
 	e.StartLoadTestPool(defaultPostgresURI)
+	//e.StartLoadTestSessions(defaultPostgresURI)
 
 
 
