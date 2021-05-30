@@ -1,4 +1,4 @@
-package consumer
+package kafka
 
 import (
 	"log"
@@ -10,15 +10,15 @@ import (
 	"github.com/Shopify/sarama"
 )
 
-var (
-	brokers           = []string{}
-	topic             = kingpin.Flag("topic", "Topic name").Default("qa").String()
-	partition         = kingpin.Flag("partition", "Partition number").Default("0").String()
-	offsetType        = kingpin.Flag("offsetType", "Offset Type (OffsetNewest | OffsetOldest)").Default("-1").Int()
-	messageCountStart = kingpin.Flag("messageCountStart", "Message counter start from:").Int()
-)
+//var (
+//	brokers           = []string{}
+//	topic             = kingpin.Flag("topic", "Topic name").Default("qa").String()
+//	partition         = kingpin.Flag("partition", "Partition number").Default("0").String()
+//	offsetType        = kingpin.Flag("offsetType", "Offset Type (OffsetNewest | OffsetOldest)").Default("-1").Int()
+//	messageCountStart = kingpin.Flag("messageCountStart", "Message counter start from:").Int()
+//)
 
-func main() {
+func StartConsumer(brokers []string , topic, partition string, offsetType, messageCountStart int)  {
 	kingpin.Parse()
 	config := sarama.NewConfig()
 
@@ -38,7 +38,7 @@ func main() {
 			log.Panic(err)
 		}
 	}()
-	consumer, err := master.ConsumePartition(*topic, 0, sarama.OffsetOldest)
+	consumer, err := master.ConsumePartition(topic, 0, sarama.OffsetOldest)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -51,7 +51,7 @@ func main() {
 			case err := <-consumer.Errors():
 				log.Println(err)
 			case msg := <-consumer.Messages():
-				*messageCountStart++
+				messageCountStart++
 				log.Println("Received messages", string(msg.Key), string(msg.Value))
 			case <-signals:
 				log.Println("Interrupt is detected")
@@ -60,5 +60,5 @@ func main() {
 		}
 	}()
 	<-doneCh
-	log.Println("Processed", *messageCountStart, "messages")
+	log.Println("Processed", messageCountStart, "messages")
 }

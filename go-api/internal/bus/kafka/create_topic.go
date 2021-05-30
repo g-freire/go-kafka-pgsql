@@ -1,4 +1,4 @@
-package producer
+package kafka
 
 import (
 	"log"
@@ -9,7 +9,7 @@ import (
 
 func CreateTopic(topicName string, partitions int32, replication int16) {
 	broker := sarama.NewBroker("localhost:9092")
-	config := CreatePublisherConfigStruct()
+	config := CreatePublisherConfigStructProd()
 	broker.Open(config)
 
 	connected, err := broker.Connected()

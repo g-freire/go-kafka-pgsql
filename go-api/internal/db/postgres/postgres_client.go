@@ -16,9 +16,9 @@ type Client struct {
 	Conn *sql.DB
 }
 
-func NewPostgresSingletonClient(source string) *sql.DB {
+func NewPostgresSingletonClient(dbHost string) *sql.DB {
 	postgresOnce.Do(func() {
-		db, err := sql.Open("postgres", source)
+		db, err := sql.Open("postgres", dbHost)
 		if err != nil {
 			log.Printf("SINGLETON CONCURRENT DB CONNECTION ERROR !! \n", err)
 			panic(err)

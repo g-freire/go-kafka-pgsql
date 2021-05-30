@@ -1,11 +1,11 @@
-package producer
+package kafka
 
 import (
 	"github.com/Shopify/sarama"
 	"time"
 )
 
-func CreatePublisherConfigStruct() *sarama.Config {
+func CreatePublisherConfigStructProd() *sarama.Config {
 
 	// RETURNS THE SANE DEFAULT CONFIG STRUCT
 	config := sarama.NewConfig()
@@ -17,6 +17,7 @@ func CreatePublisherConfigStruct() *sarama.Config {
 	// config.Net.SASL.User = "pt"
 	// config.Net.SASL.Password = "Qdk<u@jH@=J84^n3vrAj9{6J3T2zya&M"
 	// config.Net.SASL.User = "its"
+
 	// config.Net.SASL.Password = "*EvLqZ{{U7u!CrGbEVUvTGN>92XM**Q`"
 
 	// PROD PRODUCER
@@ -28,7 +29,7 @@ func CreatePublisherConfigStruct() *sarama.Config {
 	// set equal to or smaller than the broker's `message.max.bytes`.
 	config.Producer.MaxMessageBytes = 2000000
 	// (defaults to  no compression)
-	config.Producer.Compression = 1 //CompressionGZIP
+	config.Producer.Compression = 4 //CompressionGZIP
 	// (defaults to WaitForLocal)
 	config.Producer.RequiredAcks = sarama.WaitForAll
 	// ACKS timeout (defaults to 10 seconds)

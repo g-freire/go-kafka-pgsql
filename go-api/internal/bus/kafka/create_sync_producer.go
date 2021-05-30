@@ -1,4 +1,4 @@
-package producer
+package kafka
 
 import (
 	"github.com/Shopify/sarama"
@@ -7,7 +7,7 @@ import (
 
 func CreateSyncProducer(brokers []string) sarama.SyncProducer {
 
-	config := CreatePublisherConfigStruct()
+	config := CreatePublisherConfigStructProd()
 
 	producer, err := sarama.NewSyncProducer(brokers, config)
 	if err != nil {

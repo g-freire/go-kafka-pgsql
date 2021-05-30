@@ -65,8 +65,8 @@ services:
             KAFKA_BROKER_ID: 2
             KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
             KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-        volumes:
-            - ./volumes/kafka2_data:/var/lib/kafka/data
+#        volumes:
+#            - ./volumes/kafka2_data:/var/lib/kafka/data
         depends_on:
             - zoo1
       
@@ -120,7 +120,7 @@ services:
             - 8000:8000
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
-            - /volumes/portainer_data:/data
+#            - /volumes/portainer_data:/data
         networks:
             - local-net
         
@@ -137,23 +137,23 @@ services:
         depends_on:
             - kafka1
     
-    # cadvisor:
-    #     image: gcr.io/cadvisor/cadvisor:latest
-    #     container_name: cadvisor
-    #     ports:
-    #     - 2000:8080
-    #     volumes:
-    #     - /:/rootfs:ro
-    #     - /var/run:/var/run:rw
-    #     - /sys:/sys:ro
-    #     - /var/lib/docker/:/var/lib/docker:ro
-    #     depends_on:
-    #     - redis
-    # redis:
-    #     image: redis:latest
-    #     container_name: redis
-    #     ports:
-    #     - 6379:6379
+    cadvisor:
+         image: gcr.io/cadvisor/cadvisor:latest
+         container_name: cadvisor
+         ports:
+         - 2000:8080
+         volumes:
+         - /:/rootfs:ro
+         - /var/run:/var/run:rw
+         - /sys:/sys:ro
+         - /var/lib/docker/:/var/lib/docker:ro
+         depends_on:
+         - redis
+    redis:
+         image: redis:latest
+         container_name: redis
+         ports:
+         - 6379:6379
 
 
 

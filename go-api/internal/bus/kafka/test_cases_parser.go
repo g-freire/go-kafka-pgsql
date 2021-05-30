@@ -1,4 +1,4 @@
-package producer
+package kafka
 
 import (
 	"fmt"
@@ -20,7 +20,7 @@ func ReadJsonFiles() [][]byte {
 	//absPath, _ := filepath.Abs("")
 	//fileAbsolutePrefix = absPath
 
-	// DOCKER ALPINE
+	// ALPINE
 	//absPath, _ := filepath.Abs("./producer/test_files/")
 	//fileAbsolutePrefix = absPath
 
