@@ -4,9 +4,10 @@ CREATE TABLE kafka (
 	id SERIAL,
 	value text
 );
--- INSERT INTO kafka (value) VALUES ('test') RETURNING *
--- SELECT * FROM kafka
---
+-- INSERT INTO kafka (value) VALUES ('seed') RETURNING *
+
 -- BEGIN TRANSACTION;
--- INSERT INTO KAFKA (value) VALUES ('tran test');
+--  INSERT INTO KAFKA (value) VALUES ('seed') RETURNING *;
 -- COMMIT;
+
+-- SELECT * FROM kafka

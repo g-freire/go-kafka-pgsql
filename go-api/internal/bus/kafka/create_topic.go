@@ -8,7 +8,8 @@ import (
 )
 
 func CreateTopic(topicName string, partitions int32, replication int16) {
-	broker := sarama.NewBroker("localhost:9092")
+	broker := sarama.NewBroker("127.0.0.1:9092")
+	//broker := sarama.NewBroker("kafka1:19092")
 	config := CreatePublisherConfigStructProd()
 	broker.Open(config)
 
