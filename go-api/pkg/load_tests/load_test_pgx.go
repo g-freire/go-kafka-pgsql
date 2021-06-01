@@ -2,7 +2,6 @@ package event
 
 import (
 	"context"
-	"database/sql"
 	db "event-driven/internal/db/postgres"
 	"fmt"
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -13,33 +12,17 @@ import (
 	_ "github.com/lib/pq"
 )
 
-
-func insertLoad(client *sql.DB, clientN string, wg *sync.WaitGroup) {
+func insertLoadPool(conn *pgxpool.Pool, clientN string, wg *sync.WaitGroup) {
 	defer wg.Done()
 	for {
 		msg := time.Now().String()
-		sqlStatement := `INSERT INTO KAFKA (value) VALUES ($1)`
-		_, err := client.Exec(sqlStatement, msg)
-		if err != nil {
-			panic(err)
-		} else {
-			fmt.Print("\n INSERTED ", clientN, " ", msg)
-		}
-	}
-}
-
-func insertLoadPool(connection *pgxpool.Pool, clientN string, wg *sync.WaitGroup) {
-	defer wg.Done()
-	for {
-		msg := time.Now().String()
-		sqlStatement := `INSERT INTO KAFKA (value) VALUES ($1)`
-		//
+		sql := `INSERT INTO KAFKA (value) VALUES ($1)`
 		//conn, err := connection.Acquire(context.Background())
 		//if err != nil {
 		//	panic(err)
 		//} else {
 		//defer conn.Release()
-		_, err := connection.Exec(context.Background(), sqlStatement, msg)
+		_, err := conn.Exec(context.Background(), sql, msg)
 		if err != nil {
 			panic(err)
 		} else {
@@ -48,34 +31,12 @@ func insertLoadPool(connection *pgxpool.Pool, clientN string, wg *sync.WaitGroup
 	}
 }
 
-//_, err = connection.Exec(context.Background(), sqlStatement, msg)
-//if err != nil {
-//	panic(err)
-//} else {
-//	fmt.Print("\n INSERTED ", clientN, " ", msg)
-//}
-// load test the db with many inserts
-
-func StartLoadTest(defaultPostgresURI string) {
-	client := db.NewPostgresSingletonClient(defaultPostgresURI)
-	defer client.Close()
-
-	var wg sync.WaitGroup
-	for i := 0; i < 500; i++ {
-		s := strconv.Itoa(i)
-		wg.Add(1)
-		//go insertLoad(client, s, &wg)
-		go insertLoad(client, s, &wg)
-	}
-	wg.Wait()
-
-}
 
 func StartLoadTestPool(postgresURI string) {
 	client := db.NewPostgresConnectionPool(postgresURI)
 	defer client.Close()
 	var wg sync.WaitGroup
-	for i := 0; i < 500000; i++ {
+	for i := 0; i < 5; i++ {
 		s := strconv.Itoa(i)
 		wg.Add(1)
 		go insertLoadPool(client, s, &wg)
