@@ -22,7 +22,7 @@ func NewPostgresSingletonClient(dbHost string) *sql.DB {
 		db, err := sql.Open("postgres", dbHost)
 		db.SetMaxOpenConns(25)
 		db.SetMaxIdleConns(25)
-		db.SetConnMaxLifetime(2 * time.Minute)
+		db.SetConnMaxLifetime(3 * time.Minute)
 		if err != nil {
 			log.Printf("SINGLETON CONCURRENT DB CONNECTION ERROR !! \n", err)
 			panic(err)
