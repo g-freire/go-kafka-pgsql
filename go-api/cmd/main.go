@@ -20,7 +20,7 @@ func main() {
 	//k.StartConsumer(dev.Brokers, dev.Topic, "0",-1, 0)
 
 	// LOCAL POSTGRES DB
-	l.StartLoadTest(defaultPostgresURI)
-	//l.StartLoadTestPool(defaultPostgresURI)
+	//l.StartLoadTest(defaultPostgresURI)
+	l.StartLoadTestPool(defaultPostgresURI)
 	//l.StartLoadTestSessions(defaultPostgresURI)
 }

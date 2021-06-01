@@ -17,19 +17,18 @@ func insertLoad(client *sql.DB, clientN string, wg *sync.WaitGroup, stopchan cha
 
 	for {
 		select {
-		default:
-			msg := time.Now().String()
-			sqlStatement := `INSERT INTO KAFKA (value) VALUES ($1)`
-			_, err := client.Exec(sqlStatement, msg)
-			if err != nil {
-				panic(err)
-			} else {
-				fmt.Print("\n INSERTED ", clientN, " ", msg)
+			default:
+				msg := time.Now().String()
+				sqlStatement := `INSERT INTO KAFKA (value) VALUES ($1)`
+				_, err := client.Exec(sqlStatement, msg)
+				if err != nil {
+					panic(err)
+				} else {
+					fmt.Print("\n INSERTED ", clientN, " ", msg)
+				}
+			case <-stopchan:
+				return
 			}
-		case <-stopchan:
-			return
-		}
-
 	}
 }
 
@@ -42,23 +41,26 @@ func StartLoadTest(defaultPostgresURI string) {
 	defer client.Close()
 
 	start := time.Now()
-	var totalGoroutines = 10
 	for i := 0; i < totalGoroutines; i++ {
 		s := strconv.Itoa(i)
 		wg.Add(1)
 		//go insertLoad(client, s, &wg)
 		go insertLoad(client, s, &wg, stopchan)
 	}
-	wg.Wait()
 
-	//SEND STOP SIGNAL
-	time.Sleep(10 * time.Second)
+	// sends stop signal
+	time.Sleep(testTimeSeconds * time.Second)
 	close(stopchan) // tell it to stop
 	<-stopchan      // wait for it to have stopped
 	log.Println("Stopped.")
 
+	// will panic
+	//wg.Done()
+
 	elapsed := time.Since(start)
-	log.Printf("------------------------------------")
-	log.Printf("Process took %s", elapsed)
-	log.Printf("------------------------------------\n")
+	log.Printf("\n ------------------------------------")
+	log.Printf("Num. goroutines", totalGoroutines )
+	log.Printf("Test time %v", testTimeSeconds , " seconds")
+	log.Printf("Process took %s", elapsed )
+	log.Printf("------------------------------------ \n")
 }

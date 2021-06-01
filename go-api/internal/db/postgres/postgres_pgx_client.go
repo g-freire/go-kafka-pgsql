@@ -17,11 +17,14 @@ type ClientPool struct {
 
 func NewPostgresConnectionPool(dbHost string) *pgxpool.Pool {
 	postgresOnce.Do(func() {
-		pool, err := pgxpool.Connect(context.Background(), dbHost)
+		config, err := pgxpool.ParseConfig(dbHost)
+		config.MaxConns = 25
+		//config.MinConns = 25
+		pool, err := pgxpool.ConnectConfig(context.Background(), config)
 		if err != nil {
 			log.Fatalf("Couldn't connect to the database. Reason %v", err)
 		}
-		//pool.Stat()
+		pool.Stat()
 		postgresClientPool = &ClientPool{Conn: pool}
 	})
     log.Printf("DB CONNECTION POOL CREATED")
