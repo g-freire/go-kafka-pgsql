@@ -9,6 +9,7 @@ func CreatePublisherConfigStructProd() *sarama.Config {
 
 	// RETURNS THE SANE DEFAULT CONFIG STRUCT
 	config := sarama.NewConfig()
+	config.Version = sarama.V2_1_0_0
 
 	// AUTH - SALS PLAINTEXT
 	// config.Net.SASL.Enable = true

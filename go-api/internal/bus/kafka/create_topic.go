@@ -9,9 +9,9 @@ import (
 
 func CreateTopic(topicName string, partitions int32, replication int16) {
 	broker := sarama.NewBroker("localhost:9092")
-	config := CreatePublisherConfigStructProd()
+	config := sarama.NewConfig()
+	config.Version = sarama.V1_0_0_0
 	broker.Open(config)
-
 	connected, err := broker.Connected()
 	if err != nil {
 		log.Print(err.Error())

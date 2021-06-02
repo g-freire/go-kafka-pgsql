@@ -72,6 +72,7 @@ func insertLoadPoolTran(connection *pgxpool.Pool, clientN string, wg *sync.WaitG
 		rowsAffected := tran.RowsAffected()
 		if err != nil || rowsAffected != 1 {
 			log.Print(err)
+			db.RollbackTxPgx(tx, err)
 			return
 		}
 		err = tx.Commit(context.TODO())
@@ -103,7 +104,7 @@ func StartLoadTest(defaultPostgresURI string) {
 	defer client.Close()
 
 	var wg sync.WaitGroup
-	for i := 0; i < 500; i++ {
+	for i := 0; i < 2000000; i++ {
 		s := strconv.Itoa(i)
 		wg.Add(1)
 		//go insertLoad(client, s, &wg)
@@ -117,7 +118,7 @@ func StartLoadTestPool(postgresURI string) {
 	client := db.NewPostgresConnectionPool(postgresURI)
 	defer client.Close()
 	var wg sync.WaitGroup
-	for i := 0; i < 5; i++ {
+	for i := 0; i < 2000000; i++ {
 		s := strconv.Itoa(i)
 		wg.Add(1)
 		go insertLoadPool(client, s, &wg)

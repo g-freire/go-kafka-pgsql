@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS kafka;
 
 CREATE TABLE kafka (
-	id SERIAL,
+	id SERIAL PRIMARY KEY,
 	value text
 );
 -- INSERT INTO kafka (value) VALUES ('test') RETURNING *
