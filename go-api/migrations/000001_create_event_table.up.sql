@@ -1,12 +1,19 @@
 DROP TABLE IF EXISTS kafka;
 
 CREATE TABLE kafka (
+<<<<<<< HEAD
 	id SERIAL PRIMARY KEY,
 	value text
+=======
+   id SERIAL PRIMARY KEY,
+   value text
+>>>>>>> 52b46272dcd72a17a80f4b94e8f0541c77df5e20
 );
--- INSERT INTO kafka (value) VALUES ('test') RETURNING *
--- SELECT * FROM kafka
---
--- BEGIN TRANSACTION;
--- INSERT INTO KAFKA (value) VALUES ('tran test');
--- COMMIT;
+
+SELECT count(*) FROM KAFKA
+
+BEGIN TRANSACTION;
+    INSERT INTO KAFKA (value) VALUES ('seed') RETURNING *;
+COMMIT;
+
+SELECT * FROM KAFKA
