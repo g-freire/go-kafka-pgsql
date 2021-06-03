@@ -1,11 +1,14 @@
 package kafka
 
 import (
+	"context"
+	db "event-driven/internal/db/postgres"
+	"fmt"
+	kingpin "gopkg.in/alecthomas/kingpin.v2"
 	"log"
 	"os"
 	"os/signal"
-
-	kingpin "gopkg.in/alecthomas/kingpin.v2"
+	"time"
 
 	"github.com/Shopify/sarama"
 )
@@ -18,7 +21,13 @@ import (
 //	messageCountStart = kingpin.Flag("messageCountStart", "Message counter start from:").Int()
 //)
 
+const postgresURI = "postgres://admin:admin@localhost:6543/admin?sslmode=disable"
+
+
+
 func StartConsumer(brokers []string , topic, partition string, offsetType, messageCountStart int)  {
+
+
 	kingpin.Parse()
 	config := sarama.NewConfig()
 
@@ -42,6 +51,14 @@ func StartConsumer(brokers []string , topic, partition string, offsetType, messa
 	if err != nil {
 		log.Panic(err)
 	}
+
+	//INSERT LOGIC
+	client := db.NewPostgresConnectionPool(postgresURI)
+	defer client.Close()
+
+
+
+
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, os.Interrupt)
 	doneCh := make(chan struct{})
@@ -53,6 +70,18 @@ func StartConsumer(brokers []string , topic, partition string, offsetType, messa
 			case msg := <-consumer.Messages():
 				messageCountStart++
 				log.Println("Received messages", string(msg.Key), string(msg.Value))
+
+				msg2 := time.Now().String()
+				sql := `INSERT INTO KAFKA (value) VALUES ($1)`
+				_, err := client.Exec(context.Background(), sql, msg2)
+				if err != nil {
+					panic(err)
+				} else {
+					fmt.Print("\n INSERTED ", client, " ", msg)
+				}
+
+
+
 			case <-signals:
 				log.Println("Interrupt is detected")
 				doneCh <- struct{}{}
