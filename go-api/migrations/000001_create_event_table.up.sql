@@ -1,13 +1,8 @@
 DROP TABLE IF EXISTS kafka;
 
 CREATE TABLE kafka (
-<<<<<<< HEAD
-	id SERIAL PRIMARY KEY,
-	value text
-=======
    id SERIAL PRIMARY KEY,
    value text
->>>>>>> 52b46272dcd72a17a80f4b94e8f0541c77df5e20
 );
 
 SELECT count(*) FROM KAFKA
