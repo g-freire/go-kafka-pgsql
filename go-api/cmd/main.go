@@ -14,13 +14,13 @@ const defaultPostgresURI = "postgres://admin:admin@localhost:6543/admin?sslmode=
 func main() {
 	// LOCAL KAFKA
 	//k.CreateTopic( dev.Topic, 1, 1)
-	//k.SendKeepAliveSignal(dev.Brokers, dev.Topic)
+	k.SendKeepAliveSignal(dev.Brokers, dev.Topic)
 	//k.SendKeepAliveSignalLoop(dev.Brokers, dev.Topic, 0)
-	k.StartConsumer(dev.Brokers, dev.Topic, "0",-1, 0)
+	//k.StartConsumer(dev.Brokers, dev.Topic, "0",-1, 0)
 
 	// LOCAL POSTGRES DB
 	//e.StartLoadTest(defaultPostgresURI)
-	//e.StartLoadTestPool(defaultPostgresURI)
+	// e.StartLoadTestPool(defaultPostgresURI)
 	//e.StartLoadTestSessions(defaultPostgresURI)
 	//l.StartLoadTest(defaultPostgresURI)
 	//l.StartLoadTestPool(defaultPostgresURI)
