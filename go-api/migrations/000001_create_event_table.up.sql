@@ -2,10 +2,11 @@ DROP TABLE IF EXISTS kafka;
 
 CREATE TABLE kafka (
                        id SERIAL PRIMARY KEY,
-                       publisher_id int NULL,
+                       producer_id int NULL,
+                       producer_timestamp text NULL,
                        consumer_id int NULL,
-                       customer_name text NOT NULL,
-                       value text NOT NULL
+                       consumer_timestamp text  NULL,
+                       value text  NULL
 );
 
 SELECT COUNT(*) FROM KAFKA

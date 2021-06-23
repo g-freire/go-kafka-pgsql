@@ -8,7 +8,7 @@ import (
 )
 
 func CreateTopic(topicName string, partitions int32, replication int16) {
-	broker := sarama.NewBroker("localhost:9092")
+	broker := sarama.NewBroker("localhost:9094")
 	config := sarama.NewConfig()
 	config.Version = sarama.V1_0_0_0
 	broker.Open(config)

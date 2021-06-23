@@ -74,7 +74,7 @@ services:
 
     kafka3:
         image: confluentinc/cp-kafka:5.5.0  
-        container_name: kafka-broker2
+        container_name: kafka-broker3
         restart: on-failure
         hostname: kafka3
         ports:
@@ -95,7 +95,7 @@ services:
     
     # MONITORS
     kowl:
-        image: quay.io/cloudhut/kowl:v1.2.2
+        image: quay.io/cloudhut/kowl:v1.4.0
         container_name: kowl
         restart: on-failure
         hostname: kowl

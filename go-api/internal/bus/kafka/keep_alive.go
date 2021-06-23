@@ -11,14 +11,15 @@ import (
 func SendKeepAliveSignal(brokers []string, topic string) {
 	producer := CreateSyncProducer(brokers)
 	msg := time.Now().String()
-	Produce(topic, "KeepAlive", []byte(msg), producer)
+	Produce(topic, "1", []byte(msg), producer)
+	//Produce(topic, "KeepAlive", []byte(msg), producer)
 	log.Printf("KeepAliveMessage Timestamp", msg)
 	producer.Close()
 }
 
 type Response struct{
-	ProducerID int
-	Timestamp string
+	ProducerID int `json:"producer_id"`
+	ProducerTimestamp string `json:"producer_timestamp"`
 }
 
 func SendKeepAliveSignalLoop(brokers []string, topic string, delay int, producerID int) {
@@ -28,22 +29,15 @@ func SendKeepAliveSignalLoop(brokers []string, topic string, delay int, producer
 		time.Now().String(),
 	}
 	b, err := json.Marshal(r)
-
-	//var x, y int
-	//m := Multiply{
-	//	X: x,
-	//	Y: y,
-	//}
-
-	//jsonMsg, err := json.Marshal(m)
-
-
 	if err != nil {
 		fmt.Println("error marshelling:", err)
 	}
 	var i = 0
+	producerIDString := strconv.Itoa(producerID)
+	//fmt.Println(producerIDString)
 	for{
-		Produce(topic, "KeepAlive" + strconv.Itoa(i), b, producer)
+		//Produce(topic, "KeepAlive" + strconv.Itoa(i), b, producer)
+		Produce(topic, producerIDString, b, producer)
 		log.Printf("KeepAliveMessage iteration: ", i)
 		i++
 		time.Sleep(time.Duration(delay) * time.Second)
