@@ -4,7 +4,6 @@ import (
 	"context"
 	db "event-driven/internal/db/postgres"
 	"fmt"
-	kingpin "gopkg.in/alecthomas/kingpin.v2"
 	"log"
 	"os"
 	"os/signal"
@@ -25,10 +24,10 @@ const postgresURI = "postgres://admin:admin@localhost:6543/admin?sslmode=disable
 
 
 
-func StartConsumer(brokers []string , topic, partition string, offsetType, messageCountStart int)  {
+func StartConsumer(brokers []string , topic, partition string, offsetType, messageCountStart int, consumerID int)  {
 
 
-	kingpin.Parse()
+	//kingpin.Parse()
 	config := sarama.NewConfig()
 
 	// SECURITY
@@ -57,8 +56,6 @@ func StartConsumer(brokers []string , topic, partition string, offsetType, messa
 	defer client.Close()
 
 
-
-
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, os.Interrupt)
 	doneCh := make(chan struct{})
@@ -70,18 +67,14 @@ func StartConsumer(brokers []string , topic, partition string, offsetType, messa
 			case msg := <-consumer.Messages():
 				messageCountStart++
 				log.Println("Received messages", string(msg.Key), string(msg.Value))
-
-				msg2 := time.Now().String()
-				sql := `INSERT INTO KAFKA (value) VALUES ($1)`
-				_, err := client.Exec(context.Background(), sql, msg2)
+				timeNow := time.Now().String()
+				sql := `INSERT INTO KAFKA (value, publisher_id, consumer_id) VALUES ($1, $2, $3)`
+				_, err := client.Exec(context.Background(), sql, timeNow)
 				if err != nil {
 					panic(err)
 				} else {
 					fmt.Print("\n INSERTED ", client, " ", msg)
 				}
-
-
-
 			case <-signals:
 				log.Println("Interrupt is detected")
 				doneCh <- struct{}{}

@@ -11,7 +11,8 @@ func Produce(topic string, key string, value []byte, producer sarama.SyncProduce
 		Topic:     topic,
 		Partition: 1,
 		Key:       sarama.StringEncoder(key),
-		Value:     sarama.StringEncoder(value),
+		Value:     sarama.ByteEncoder(value),
+		//Value:     sarama.StringEncoder(value),
 	}
 
 	partition, offset, err := producer.SendMessage(msg)

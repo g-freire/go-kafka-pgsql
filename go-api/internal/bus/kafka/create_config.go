@@ -50,6 +50,9 @@ func CreatePublisherConfigStructProd() *sarama.Config {
 	config.Metadata.Retry.Backoff = 500 * time.Millisecond
 	config.Metadata.RefreshFrequency = 8 * time.Minute
 
+	config.Producer.Partitioner = sarama.NewRoundRobinPartitioner
+
+
 	return config
 
 }
