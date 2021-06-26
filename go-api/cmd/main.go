@@ -9,7 +9,7 @@ import (
 var dev = k.Env{
 	Brokers: []string{"127.0.0.1:9096", "127.0.0.1:9092", "127.0.0.1:9094"},
 	//Brokers: []string{"127.0.0.1:9092", "127.0.0.1:9094", "127.0.0.1:9096"},
-	Topic: "POC3",
+	Topic: "POC6",
 }
 
 const defaultPostgresURI = "postgres://admin:admin@localhost:6543/admin?sslmode=disable"
@@ -25,12 +25,12 @@ func main() {
 	log.Println("\nKAFKA TYPE:", *kafka_type, "ID:", *id)
 
 	// LOCAL KAFKA
-	k.CreateTopic( dev.Topic, 4, 1)
+	//k.CreateTopic( dev.Topic, 4, 1)
 
 	if *kafka_type == "p"{
 		log.Println("\nKAFKA TYPE PRODUCER :", *kafka_type)
 		//k.SendKeepAliveSignal(dev.Brokers, dev.Topic)
-		k.SendKeepAliveSignalLoop(dev.Brokers, dev.Topic, 3, *id)
+		k.SendKeepAliveSignalLoop(dev.Brokers, dev.Topic, 0, *id)
 	}
 	if *kafka_type == "c"{
 		log.Println("\nKAFKA TYPE CONSUMER :", *kafka_type)

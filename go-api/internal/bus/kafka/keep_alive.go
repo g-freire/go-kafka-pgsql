@@ -20,22 +20,27 @@ func SendKeepAliveSignal(brokers []string, topic string) {
 type Response struct{
 	ProducerID int `json:"producer_id"`
 	ProducerTimestamp string `json:"producer_timestamp"`
+	Value int `json:"value"`
+
 }
 
 func SendKeepAliveSignalLoop(brokers []string, topic string, delay int, producerID int) {
 	producer := CreateSyncProducer(brokers)
-	r := Response{
-		producerID,
-		time.Now().String(),
-	}
-	b, err := json.Marshal(r)
-	if err != nil {
-		fmt.Println("error marshelling:", err)
-	}
+
 	var i = 0
 	producerIDString := strconv.Itoa(producerID)
-	//fmt.Println(producerIDString)
+
 	for{
+		r := Response{
+			producerID,
+			time.Now().String(),
+			i,
+		}
+		b, err := json.Marshal(r)
+		if err != nil {
+			fmt.Println("error marshelling:", err)
+		}
+
 		//Produce(topic, "KeepAlive" + strconv.Itoa(i), b, producer)
 		Produce(topic, producerIDString, b, producer)
 		log.Printf("KeepAliveMessage iteration: ", i)

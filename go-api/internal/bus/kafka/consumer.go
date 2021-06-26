@@ -46,7 +46,7 @@ func StartConsumer(brokers []string , topic, partition string, offsetType, messa
 		}
 	}()
 	//consumer, err := master.ConsumePartition(topic, 0, sarama.OffsetOldest)
-	consumer, err := master.ConsumePartition(topic, 0, sarama.OffsetOldest)
+	consumer, err := master.ConsumePartition(topic, 1, sarama.OffsetOldest)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -75,8 +75,10 @@ func StartConsumer(brokers []string , topic, partition string, offsetType, messa
 				timeNow := time.Now().String()
 
 				sql := `INSERT INTO KAFKA (producer_id, producer_timestamp,
-										   consumer_id, consumer_timestamp) VALUES ($1, $2, $3, $4)`
-				_, err = client.Exec(context.Background(), sql, m.ProducerID, m.ProducerTimestamp, consumerID, timeNow)
+										   consumer_id, consumer_timestamp, 
+										   value) 
+						VALUES ($1, $2, $3, $4, $5)`
+				_, err = client.Exec(context.Background(), sql, m.ProducerID, m.ProducerTimestamp, consumerID, timeNow, m.Value)
 				if err != nil {
 					panic(err)
 				} else {

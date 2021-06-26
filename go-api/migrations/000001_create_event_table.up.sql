@@ -6,7 +6,7 @@ CREATE TABLE kafka (
                        producer_timestamp text NULL,
                        consumer_id int NULL,
                        consumer_timestamp text  NULL,
-                       value text  NULL
+                       value int  NULL
 );
 
 SELECT COUNT(*) FROM KAFKA
