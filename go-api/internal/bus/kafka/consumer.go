@@ -46,7 +46,7 @@ func StartConsumer(brokers []string , topic, partition string, offsetType, messa
 		}
 	}()
 	//consumer, err := master.ConsumePartition(topic, 0, sarama.OffsetOldest)
-	consumer, err := master.ConsumePartition(topic, 1, sarama.OffsetOldest)
+	consumer, err := master.ConsumePartition(topic, 0, sarama.OffsetOldest)
 	if err != nil {
 		log.Panic(err)
 	}

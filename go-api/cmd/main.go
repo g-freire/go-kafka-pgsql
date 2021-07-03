@@ -9,7 +9,7 @@ import (
 var dev = k.Env{
 	Brokers: []string{"127.0.0.1:9096", "127.0.0.1:9092", "127.0.0.1:9094"},
 	//Brokers: []string{"127.0.0.1:9092", "127.0.0.1:9094", "127.0.0.1:9096"},
-	Topic: "POC6",
+	Topic: "POC7",
 }
 
 const defaultPostgresURI = "postgres://admin:admin@localhost:6543/admin?sslmode=disable"
@@ -18,7 +18,7 @@ const defaultPostgresURI = "postgres://admin:admin@localhost:6543/admin?sslmode=
 
 func main() {
 	// CLI
-	kafka_type := flag.String("t", "p", "Types of kafka eg. -t=c for consumer or -t=p for producer")
+	kafka_type := flag.String("t", "c", "Types of kafka eg. -t=c for consumer or -t=p for producer")
 	id := flag.Int("id", 1, "ID of the consumer or producer ")
 
 	flag.Parse()
@@ -34,7 +34,8 @@ func main() {
 	}
 	if *kafka_type == "c"{
 		log.Println("\nKAFKA TYPE CONSUMER :", *kafka_type)
-		k.StartConsumer(dev.Brokers, dev.Topic, "0",-1, 0, *id)
+		//k.StartConsumer(dev.Brokers, dev.Topic, "0",-1, 0, *id)
+		k.StartConsumerGroup(dev.Brokers, dev.Topic, "0",-1, 0, *id)
 	}
 
 	// LOCAL POSTGRES DB
