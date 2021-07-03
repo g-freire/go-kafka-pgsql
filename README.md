@@ -14,7 +14,9 @@
 
 
 RUN A CONSUMER
-go run .\main.go -t=c
+go run .\main.go -t=c -id=1
+go run .\main.go -t=c -id=2
 
 RUN A PRODUCER
-go run .\main.go -t=c
+go run .\main.go -t=p -id=1
+go run .\main.go -t=p -id=2
