@@ -6,12 +6,13 @@ import (
 )
 
 
-func Produce(topic string, key string, value []byte, producer sarama.SyncProducer) {
+func Produce(topic string,  key string,value []byte, producer sarama.SyncProducer) {
 	msg := &sarama.ProducerMessage{
 		Topic:     topic,
-		Partition: 1,
+		//Partition: key,
 		Key:       sarama.StringEncoder(key),
-		Value:     sarama.StringEncoder(value),
+		Value:     sarama.ByteEncoder(value),
+		//Value:     sarama.StringEncoder(value),
 	}
 
 	partition, offset, err := producer.SendMessage(msg)

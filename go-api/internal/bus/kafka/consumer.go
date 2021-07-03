@@ -2,15 +2,14 @@ package kafka
 
 import (
 	"context"
+	"encoding/json"
 	db "event-driven/internal/db/postgres"
 	"fmt"
-	kingpin "gopkg.in/alecthomas/kingpin.v2"
+	"github.com/Shopify/sarama"
 	"log"
 	"os"
 	"os/signal"
 	"time"
-
-	"github.com/Shopify/sarama"
 )
 
 //var (
@@ -24,11 +23,10 @@ import (
 const postgresURI = "postgres://admin:admin@localhost:6543/admin?sslmode=disable"
 
 
+func StartConsumer(brokers []string , topic, partition string, offsetType, messageCountStart int, consumerID int)  {
 
-func StartConsumer(brokers []string , topic, partition string, offsetType, messageCountStart int)  {
 
-
-	kingpin.Parse()
+	//kingpin.Parse()
 	config := sarama.NewConfig()
 
 	// SECURITY
@@ -47,6 +45,7 @@ func StartConsumer(brokers []string , topic, partition string, offsetType, messa
 			log.Panic(err)
 		}
 	}()
+	//consumer, err := master.ConsumePartition(topic, 0, sarama.OffsetOldest)
 	consumer, err := master.ConsumePartition(topic, 0, sarama.OffsetOldest)
 	if err != nil {
 		log.Panic(err)
@@ -55,8 +54,6 @@ func StartConsumer(brokers []string , topic, partition string, offsetType, messa
 	//INSERT LOGIC
 	client := db.NewPostgresConnectionPool(postgresURI)
 	defer client.Close()
-
-
 
 
 	signals := make(chan os.Signal, 1)
@@ -68,20 +65,25 @@ func StartConsumer(brokers []string , topic, partition string, offsetType, messa
 			case err := <-consumer.Errors():
 				log.Println(err)
 			case msg := <-consumer.Messages():
+				var m Response
+				err := json.Unmarshal(msg.Value, &m)
+				if err != nil {
+					fmt.Println("error unmarshelling:", err)
+				}
 				messageCountStart++
 				log.Println("Received messages", string(msg.Key), string(msg.Value))
+				timeNow := time.Now().String()
 
-				msg2 := time.Now().String()
-				sql := `INSERT INTO KAFKA (value) VALUES ($1)`
-				_, err := client.Exec(context.Background(), sql, msg2)
+				sql := `INSERT INTO KAFKA (producer_id, producer_timestamp,
+										   consumer_id, consumer_timestamp, 
+										   value) 
+						VALUES ($1, $2, $3, $4, $5)`
+				_, err = client.Exec(context.Background(), sql, m.ProducerID, m.ProducerTimestamp, consumerID, timeNow, m.Value)
 				if err != nil {
 					panic(err)
 				} else {
 					fmt.Print("\n INSERTED ", client, " ", msg)
 				}
-
-
-
 			case <-signals:
 				log.Println("Interrupt is detected")
 				doneCh <- struct{}{}

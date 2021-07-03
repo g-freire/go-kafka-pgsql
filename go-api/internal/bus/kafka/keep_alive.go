@@ -1,6 +1,8 @@
 package kafka
 
 import (
+	"encoding/json"
+	"fmt"
 	"log"
 	"strconv"
 	"time"
@@ -9,17 +11,38 @@ import (
 func SendKeepAliveSignal(brokers []string, topic string) {
 	producer := CreateSyncProducer(brokers)
 	msg := time.Now().String()
-	Produce(topic, "KeepAlive", []byte(msg), producer)
+	Produce(topic, "1", []byte(msg), producer)
+	//Produce(topic, "KeepAlive", []byte(msg), producer)
 	log.Printf("KeepAliveMessage Timestamp", msg)
 	producer.Close()
 }
 
-func SendKeepAliveSignalLoop(brokers []string, topic string, delay int) {
+type Response struct{
+	ProducerID int `json:"producer_id"`
+	ProducerTimestamp string `json:"producer_timestamp"`
+	Value int `json:"value"`
+
+}
+
+func SendKeepAliveSignalLoop(brokers []string, topic string, delay int, producerID int) {
 	producer := CreateSyncProducer(brokers)
-	msg := time.Now().String()
+
 	var i = 0
+	producerIDString := strconv.Itoa(producerID)
+
 	for{
-		Produce(topic, "KeepAlive" + strconv.Itoa(i), []byte(msg), producer)
+		r := Response{
+			producerID,
+			time.Now().String(),
+			i,
+		}
+		b, err := json.Marshal(r)
+		if err != nil {
+			fmt.Println("error marshelling:", err)
+		}
+
+		//Produce(topic, "KeepAlive" + strconv.Itoa(i), b, producer)
+		Produce(topic, producerIDString, b, producer)
 		log.Printf("KeepAliveMessage iteration: ", i)
 		i++
 		time.Sleep(time.Duration(delay) * time.Second)

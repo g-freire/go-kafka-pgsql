@@ -53,8 +53,9 @@ services:
             - zoo1
     
     kafka2:
-        image: confluentinc/cp-kafka:latest
+        image: confluentinc/cp-kafka:5.5.0  
         container_name: kafka-broker2
+        restart: on-failure
         hostname: kafka2
         ports:
             - "9094:9094"
@@ -67,49 +68,83 @@ services:
             KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
             KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
         volumes:
-           - ./volumes/kafka2_data:/var/lib/kafka/data
+            - ./volumes/kafka2_data:/var/lib/kafka/data
+        depends_on:
+            - zoo1
+
+    kafka3:
+        image: confluentinc/cp-kafka:5.5.0  
+        container_name: kafka-broker3
+        restart: on-failure
+        hostname: kafka3
+        ports:
+            - "9096:9096"
+        environment:
+            KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka3:19092,LISTENER_DOCKER_EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9096
+            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT
+            KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
+            KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181"
+            KAFKA_BROKER_ID: 3
+            KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+            KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+        volumes:
+            - ./volumes/kafka3_data:/var/lib/kafka/data
         depends_on:
             - zoo1
       
     
     # MONITORS
-    postgres-exporter:
-        image: quay.io/prometheuscommunity/postgres-exporter:latest
-        container_name: postgres-exporter
-        environment:
-        - DATA_SOURCE_NAME=postgresql://admin:admin@postgres:5432/postgres?sslmode=disable
-        ports:
-        - 9187:9187
-        networks:
-        - local-net
-
-    prometheus:
-        image: prom/prometheus:latest
-        container_name: prometheus
+    kowl:
+        image: quay.io/cloudhut/kowl:v1.4.0
+        container_name: kowl
         restart: on-failure
+        hostname: kowl
         volumes:
-        - ./volumes/prometheus-data:/prometheus-data
-        - ./prometheus.yml:/etc/prometheus/prometheus.yml
+        - ./config.yaml:/etc/kowl/config.yaml
         ports:
-        - 9090:9090
-        networks:
-        - local-net
-        # depends_on:
-        # - cadvisor
+        - "8080:8080"
+        entrypoint: ./kowl --config.filepath=/etc/kowl/config.yaml
+        depends_on:
+            - kafka1
 
-    grafana:
-        image: grafana/grafana:latest
-        container_name: grafana
-        restart: on-failure
-        environment:
-            - GF_SERVER_ROOT_URL=http://127.0.0.1:3000
-            - GF_SECURITY_ADMIN_PASSWORD=admin
-        ports:
-            - 3000:3000
-        networks:
-            - local-net
-        external_links:
-            - local-net
+
+    # postgres-exporter:
+    #     image: quay.io/prometheuscommunity/postgres-exporter:latest
+    #     container_name: postgres-exporter
+    #     environment:
+    #     - DATA_SOURCE_NAME=postgresql://admin:admin@postgres:5432/postgres?sslmode=disable
+    #     ports:
+    #     - 9187:9187
+    #     networks:
+    #     - local-net
+
+    # prometheus:
+    #     image: prom/prometheus:latest
+    #     container_name: prometheus
+    #     restart: on-failure
+    #     volumes:
+    #     - ./volumes/prometheus-data:/prometheus-data
+    #     - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    #     ports:
+    #     - 9090:9090
+    #     networks:
+    #     - local-net
+    #     # depends_on:
+    #     # - cadvisor
+
+    # grafana:
+    #     image: grafana/grafana:latest
+    #     container_name: grafana
+    #     restart: on-failure
+    #     environment:
+    #         - GF_SERVER_ROOT_URL=http://127.0.0.1:3000
+    #         - GF_SECURITY_ADMIN_PASSWORD=admin
+    #     ports:
+    #         - 3000:3000
+    #     networks:
+    #         - local-net
+    #     external_links:
+    #         - local-net
 
 #     portainer:
 #         image: portainer/portainer:latest
@@ -125,18 +160,7 @@ services:
 #         networks:
 #             - local-net
         
-    kowl:
-        image: quay.io/cloudhut/kowl:v1.2.2
-        container_name: kowl
-        restart: on-failure
-        hostname: kowl
-        volumes:
-        - ./config.yaml:/etc/kowl/config.yaml
-        ports:
-        - "8080:8080"
-        entrypoint: ./kowl --config.filepath=/etc/kowl/config.yaml
-        depends_on:
-            - kafka1
+
     
     # cadvisor:
     #      image: gcr.io/cadvisor/cadvisor:latest

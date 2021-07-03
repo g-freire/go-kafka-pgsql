@@ -1,7 +1,7 @@
 package event
 
 const (
-	totalGoroutines = 20000
+	totalGoroutines = 2000000
 	testTimeSeconds = 120
 )
 

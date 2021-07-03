@@ -13,3 +13,8 @@
 ##### Kowl (Kafka monitor) -> localhost:8080
 
 
+RUN A CONSUMER
+go run .\main.go -t=c
+
+RUN A PRODUCER
+go run .\main.go -t=c
