@@ -1,6 +1,6 @@
-DROP TABLE IF EXISTS kafka;
+DROP TABLE IF EXISTS events;
 
-CREATE TABLE kafka (
+CREATE TABLE events (
                        id SERIAL PRIMARY KEY,
                        producer_id int NULL,
                        producer_timestamp text NULL,
@@ -9,11 +9,13 @@ CREATE TABLE kafka (
                        value int  NULL
 );
 
-SELECT COUNT(*) FROM KAFKA
+SELECT COUNT(*) FROM events
 
 -- BEGIN TRANSACTION;
--- INSERT INTO KAFKA (value) VALUES ('seed') RETURNING *;
+-- INSERT INTO events (value) VALUES ('seed') RETURNING *;
 -- COMMIT;
 --
--- SELECT * FROM KAFKA
--- SELECT COUNT(*) FROM KAFKA
+SELECT COUNT(*) FROM events
+SELECT * FROM events
+SELECT * FROM events WHERE producer_id = 1
+SELECT * FROM events WHERE producer_id = 2
