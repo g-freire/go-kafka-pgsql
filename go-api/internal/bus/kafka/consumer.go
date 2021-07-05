@@ -74,7 +74,7 @@ func StartConsumer(brokers []string , topic, partition string, offsetType, messa
 				log.Println("Received messages", string(msg.Key), string(msg.Value))
 				timeNow := time.Now().String()
 
-				sql := `INSERT INTO KAFKA (producer_id, producer_timestamp,
+				sql := `INSERT INTO events (producer_id, producer_timestamp,
 										   consumer_id, consumer_timestamp, 
 										   value) 
 						VALUES ($1, $2, $3, $4, $5)`

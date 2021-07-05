@@ -7,8 +7,8 @@ import (
 	"github.com/Shopify/sarama" // Sarama 1.22.0
 )
 
-func CreateTopic(topicName string, partitions int32, replication int16) {
-	broker := sarama.NewBroker("localhost:9096")
+func CreateTopic(topicName string, partitions int32, replication int16, brokerLeader string) {
+	broker := sarama.NewBroker(brokerLeader)
 	config := sarama.NewConfig()
 	config.Version = sarama.V1_0_0_0
 	broker.Open(config)

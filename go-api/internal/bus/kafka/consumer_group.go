@@ -2,6 +2,7 @@ package kafka
 
 import (
 	"context"
+	"encoding/json"
 	db "event-driven/internal/db/postgres"
 	"fmt"
 	"log"
@@ -19,14 +20,13 @@ import (
 var (
 	brokers  = "127.0.0.1:9096"
 	version  = "2.1.1"
-	group    = "teste"
+	group    = "sarama-cg"
 	assignor = "roundrobin"
 	oldest   = true
 	verbose  = true
 )
 
-
-func StartConsumerGroup(brokers []string , topic, partition string, offsetType, messageCountStart int, consumerID int) {
+func StartConsumerGroup(brokers []string, topic, partition string, offsetType, messageCountStart int, consumerID int) {
 	log.Println("Starting a new Sarama consumer")
 
 	if verbose {
@@ -140,24 +140,51 @@ func (consumer *Consumer) ConsumeClaim(session sarama.ConsumerGroupSession, clai
 
 	for message := range claim.Messages() {
 		log.Printf("Message claimed: value = %s, timestamp = %v, topic = %s", string(message.Value), message.Timestamp, message.Topic)
+		// serialization from  the kafka json value to a business struct
+		var m Response
+		err := json.Unmarshal(message.Value, &m)
+		if err != nil {
+			fmt.Println("error unmarshelling:", err)
+		}
 		log.Println("Received messages", string(message.Key), string(message.Value))
 		timeNow := time.Now().String()
-		var m Response
-		sql := `INSERT INTO KAFKA (producer_id, producer_timestamp,
-										   consumer_id, consumer_timestamp, 
-										   value) 
-						VALUES ($1, $2, $3, $4, $5)`
 
-		_, err := client.Exec(context.Background(), sql, m.ProducerID, m.ProducerTimestamp, 1,  timeNow, m.Value)
+		//START TRANSACTION
+		ctx := context.TODO()
+		tx, err := client.Begin(ctx)
 		if err != nil {
-			panic(err)
+			return err
+			//panic(err)
+		}
+		defer tx.Rollback(ctx)
+
+		// 1)  first statement is for idempotent logic check
+		sql := "INSERT INTO processed_message(msg_id) VALUES ($1);"
+		_, err = tx.Exec(ctx, sql, m.Value)
+		if err != nil {
+			tx.Rollback(ctx)
+			return nil
+		}
+		// 2)  seccond  statement is for msg processing
+		sql2 := `INSERT INTO events (producer_id, producer_timestamp,
+								     consumer_id, consumer_timestamp, 
+								     value) 
+									VALUES ($1, $2, $3, $4, $5);
+				`
+		_, err = tx.Exec(context.TODO(), sql2, m.ProducerID, m.ProducerTimestamp, 1, timeNow, m.Value)
+		if err != nil {
+			tx.Rollback(ctx)
+			return nil
+		}
+		// commit the UOW
+		err = tx.Commit(ctx)
+		if err != nil {
+			//return err
+			return nil
 		} else {
 			fmt.Print("\n INSERTED ", client, " ", message)
 		}
 		session.MarkMessage(message, "")
-
-
-
 	}
 
 	return nil
