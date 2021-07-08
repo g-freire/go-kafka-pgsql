@@ -1,6 +1,6 @@
 package main
 
-import (
+import 		(
 	kafka "event-driven/internal/bus/kafka"
 	"flag"
 	"log"
@@ -9,7 +9,8 @@ import (
 var dev = kafka.Env{
 	Brokers: []string{"127.0.0.1:9092", "127.0.0.1:9094"},
 	//Brokers: []string{"127.0.0.1:9092", "127.0.0.1:9094", "127.0.0.1:9096"},
-	Topic: "POC2",
+	Topic: "INGESTER",
+	//Topic: "POC2",
 }
 
 const defaultPostgresURI = "postgres://admin:admin@localhost:6543/admin?sslmode=disable"
@@ -19,23 +20,24 @@ func main() {
 	kafka_type := flag.String("t", "c", "Types of kafka eg. -t=c for consumer or -t=p for producer")
 	id := flag.Int("id", 1, "ID of the consumer or producer ")
 	flag.Parse()
-	log.Println("\nKAFKA TYPE:", *kafka_type, "ID:", *id)
+	log.Println("  KAFKA TYPE:", *kafka_type, "ID:", *id)
 
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	// KAFKA
 	//////////////////////////////////////////////////////////////////////////////////////////////
-	kafka.CreateTopic( dev.Topic, 4, 1, dev.Brokers[0])
+	//kafka.CreateTopic(dev.Topic, 4, 1, dev.Brokers[1])
+	//return
 
-	if *kafka_type == "p"{
-		log.Println("\nKAFKA TYPE PRODUCER :", *kafka_type)
+	if *kafka_type == "p" {
+		log.Println("  KAFKA TYPE PRODUCER :", *kafka_type)
 		//k.SendKeepAliveSignal(dev.Brokers, dev.Topic)
 		kafka.SendKeepAliveSignalLoop(dev.Brokers, dev.Topic, 1, *id)
 	}
-	if *kafka_type == "c"{
-		log.Println("\nKAFKA TYPE CONSUMER :", *kafka_type)
+	if *kafka_type == "c" {
+		log.Println("  KAFKA TYPE CONSUMER :", *kafka_type)
 		//k.StartConsumer(dev.Brokers, dev.Topic, "0",-1, 0, *id)
-		kafka.StartConsumerGroup(dev.Brokers, dev.Topic, "0",-1, 0, *id)
-		kafka.StartConfluentConsumerGroup(dev.Brokers, dev.Topic, "0",-1, 0, *id)
+		// kafka.StartConsumerGroup(dev.Brokers, dev.Topic, "0",-1, 0, *id)
+		kafka.StartConfluentConsumerGroup(dev.Brokers, []string{dev.Topic}, "TWorkers", string(2), 0, 0, *id)
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////

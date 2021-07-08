@@ -42,7 +42,7 @@ func SendKeepAliveSignalLoop(brokers []string, topic string, delay int, producer
 		}
 
 		//Produce(topic, "KeepAlive" + strconv.Itoa(i), b, producer)
-		Produce(topic, producerIDString, b, producer)
+		ProduceConfluent(brokers,topic, producerIDString, b, producer)
 		log.Printf("KeepAliveMessage iteration: ", i)
 		i++
 		time.Sleep(time.Duration(delay) * time.Second)

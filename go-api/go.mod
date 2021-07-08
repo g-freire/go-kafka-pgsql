@@ -8,4 +8,5 @@ require (
 	github.com/golang-migrate/migrate/v4 v4.14.1
 	github.com/jackc/pgx/v4 v4.10.1
 	github.com/lib/pq v1.10.2
+	github.com/satori/go.uuid v1.2.0
 )
