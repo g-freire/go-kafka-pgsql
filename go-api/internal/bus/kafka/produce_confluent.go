@@ -5,23 +5,45 @@ import (
 	"fmt"
 	"github.com/Shopify/sarama"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
-	"github.com/satori/go.uuid"
 	"strconv"
 )
 
 
+const (
+	bootstrapServers = "23.97.166.140:9092"
+	ccloudAPIKey     = "admin"
+	ccloudAPISecret  = "admin"
+)
+
 func ProduceConfluent(brokers []string, topic string,  key string, value []byte, producer sarama.SyncProducer) {
-	u1 := uuid.Must(uuid.NewV4(), nil)
+	//u1 := uuid.Must(uuid.NewV4(), nil)
+
+	//https://docs.confluent.io/platform/current/installation/configuration/producer-configs.html
+	//p, err := kafka.NewProducer(&kafka.ConfigMap{
+	//	"bootstrap.servers":  brokers[0],
+	//	"enable.idempotence": "true",
+	//	"acks": "all",
+	//	"retries":5,
+	////	"transactional.id": u1,
+	//	"compression.type":"snappy",
+	//	"request.timeout.ms": 8000,
+	//	// SECURITY
+	//	"sasl.mechanisms":         "PLAIN",
+	//	"security.protocol":       "SASL_PLAINTEXT",
+	//	//"security.protocol":       "SASL_SSL",
+	//	//"sasl.username":           "its",
+	//	//"sasl.password":           "*EvLqZ{{U7u!CrGbEVUvTGN>92XM**Q`a",
+	//	"sasl.username":           "admin",
+	//	"sasl.password":           "admin",
+	//})
 
 	p, err := kafka.NewProducer(&kafka.ConfigMap{
-		//https://docs.confluent.io/platform/current/installation/configuration/producer-configs.html
-		"bootstrap.servers":  brokers[0],
-		"enable.idempotence": "true",
-		"acks": "all",
-		"transactional.id": u1,
-		"compression.type":"snappy",
-		"retries":5,
-	})
+		"bootstrap.servers":       brokers[0],
+		"sasl.mechanisms":         "PLAIN",
+		//"security.protocol":       "SASL_SSL",
+		"security.protocol":       "SASL_PLAINTEXT",
+		"sasl.username":           ccloudAPIKey,
+		"sasl.password":           ccloudAPISecret})
 
 	if err != nil {
 		panic(err)

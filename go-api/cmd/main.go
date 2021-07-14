@@ -7,9 +7,10 @@ import 		(
 )
 
 var dev = kafka.Env{
-	Brokers: []string{"127.0.0.1:9092", "127.0.0.1:9094"},
-	//Brokers: []string{"127.0.0.1:9092", "127.0.0.1:9094", "127.0.0.1:9096"},
-	Topic: "INGESTER",
+	//Brokers: []string{"127.0.0.1:9092", "127.0.0.1:9094"},
+	Brokers: []string{"51.144.81.251:9092","23.97.166.140:9092"},
+	//Brokers: []string	{"13.95.229.185:9092"},
+	Topic: "INGESTER2",
 	//Topic: "POC2",
 }
 
@@ -17,7 +18,7 @@ const defaultPostgresURI = "postgres://admin:admin@localhost:6543/admin?sslmode=
 
 func main() {
 	// CLI
-	kafka_type := flag.String("t", "c", "Types of kafka eg. -t=c for consumer or -t=p for producer")
+	kafka_type := flag.String("t", "p", "Types of kafka eg. -t=c for consumer or -t=p for producer")
 	id := flag.Int("id", 1, "ID of the consumer or producer ")
 	flag.Parse()
 	log.Println("  KAFKA TYPE:", *kafka_type, "ID:", *id)
@@ -25,7 +26,7 @@ func main() {
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	// KAFKA
 	//////////////////////////////////////////////////////////////////////////////////////////////
-	//kafka.CreateTopic(dev.Topic, 4, 1, dev.Brokers[1])
+	//kafka.CreateTopic(dev.Topic, 4, 1, dev.Brokers[0])
 	//return
 
 	if *kafka_type == "p" {
