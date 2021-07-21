@@ -13,6 +13,7 @@ func CreateSyncProducer(brokers []string) sarama.SyncProducer {
 	if err != nil {
 		log.Panic(err)
 	}
+
 	//defer func() {
 	//	if err := producer.Close(); err != nil {
 	//		log.Panic(err)

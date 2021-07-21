@@ -25,7 +25,7 @@ type Response struct{
 }
 
 func SendKeepAliveSignalLoop(brokers []string, topic string, delay int, producerID int) {
-	producer := CreateSyncProducer(brokers)
+	//producer := CreateSyncProducer(brokers)
 
 	var i = 0
 	producerIDString := strconv.Itoa(producerID)
@@ -42,10 +42,14 @@ func SendKeepAliveSignalLoop(brokers []string, topic string, delay int, producer
 		}
 
 		//Produce(topic, "KeepAlive" + strconv.Itoa(i), b, producer)
-		ProduceConfluent(brokers,topic, producerIDString, b, producer)
+		ProduceConfluent(brokers,topic, producerIDString, b)
+
 		log.Printf("KeepAliveMessage iteration: ", i)
+		fmt.Println("--------------------------------")
+		fmt.Println("\n ITERATION",i)
+		fmt.Println("--------------------------------")
 		i++
-		time.Sleep(time.Duration(delay) * time.Second)
+		time.Sleep(time.Duration(60 * i) * time.Second)
 	}
-	producer.Close()
+	//producer.Close()
 }
